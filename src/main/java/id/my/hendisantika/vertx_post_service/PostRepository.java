@@ -1,10 +1,14 @@
 package id.my.hendisantika.vertx_post_service;
 
+import io.vertx.core.Future;
 import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.Row;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,4 +41,14 @@ public class PostRepository {
   public static PostRepository create(Pool client) {
     return new PostRepository(client);
   }
+
+  public Future<List<Post>> findAll() {
+    return client.query("SELECT * FROM posts ORDER BY id ASC")
+      .execute()
+      .map(rs -> StreamSupport.stream(rs.spliterator(), false)
+        .map(MAPPER)
+        .collect(Collectors.toList())
+      );
+  }
+
 }
