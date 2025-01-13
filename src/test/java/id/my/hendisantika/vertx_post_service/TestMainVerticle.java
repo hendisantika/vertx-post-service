@@ -117,6 +117,23 @@ public class TestMainVerticle {
   }
 
   @Test
+  void testDeleteByNoneExistingId(Vertx vertx, VertxTestContext testContext) {
+    var postByIdUrl = "/posts/" + UUID.randomUUID();
+    client.request(HttpMethod.DELETE, postByIdUrl)
+      .flatMap(HttpClientRequest::send)
+      .onComplete(
+        testContext.succeeding(
+          response -> testContext.verify(
+            () -> {
+              assertThat(response.statusCode()).isEqualTo(404);
+              testContext.completeNow();
+            }
+          )
+        )
+      );
+  }
+
+  @Test
   void verticle_deployed(Vertx vertx, VertxTestContext testContext) throws Throwable {
     testContext.completeNow();
   }
