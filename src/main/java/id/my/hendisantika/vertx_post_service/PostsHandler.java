@@ -4,6 +4,7 @@ import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -51,6 +52,20 @@ public class PostsHandler {
       )
       .onFailure(
         rc::fail
+      );
+  }
+
+  public void save(RoutingContext rc) {
+    //rc.getBodyAsJson().mapTo(PostForm.class)
+    var body = rc.body().asJsonObject();
+    LOGGER.log(Level.INFO, "request body: {0}", body);
+    var form = body.mapTo(CreatePostCommand.class);
+    this.posts.save(Post.of(form.getTitle(), form.getContent()))
+      .onSuccess(
+        savedId -> rc.response()
+          .putHeader("Location", "/posts/" + savedId)
+          .setStatusCode(201)
+          .end()
       );
   }
 }
