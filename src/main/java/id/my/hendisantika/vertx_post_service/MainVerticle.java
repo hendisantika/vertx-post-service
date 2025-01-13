@@ -8,6 +8,9 @@ import io.vertx.core.Promise;
 import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.pgclient.PgConnectOptions;
+import io.vertx.sqlclient.Pool;
+import io.vertx.sqlclient.PoolOptions;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -90,4 +93,20 @@ public class MainVerticle extends AbstractVerticle {
     return router;
   }
 
+  private Pool pgPool() {
+    PgConnectOptions connectOptions = new PgConnectOptions()
+      .setPort(5432)
+      .setHost("localhost")
+      .setDatabase("blog_db")
+      .setUser("yu71")
+      .setPassword("53cret");
+
+    // Pool Options
+    PoolOptions poolOptions = new PoolOptions().setMaxSize(5);
+
+    // Create the pool from the data object
+    Pool pool = Pool.pool(vertx, connectOptions, poolOptions);
+
+    return pool;
+  }
 }
