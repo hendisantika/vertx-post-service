@@ -6,7 +6,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.jackson.DatabindCodec;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MainVerticle extends AbstractVerticle {
@@ -61,4 +64,30 @@ public class MainVerticle extends AbstractVerticle {
       })
     ;
   }
+
+  //create routes
+  private Router routes(PostsHandler handlers) {
+
+    // Create a Router
+    Router router = Router.router(vertx);
+    // register BodyHandler globally.
+    //router.route().handler(BodyHandler.create());
+    router.get("/posts").produces("application/json").handler(handlers::all);
+    router.post("/posts").consumes("application/json").handler(BodyHandler.create()).handler(handlers::save);
+    router.get("/posts/:id").produces("application/json").handler(handlers::get)
+      .failureHandler(frc -> {
+        Throwable failure = frc.failure();
+        if (failure instanceof PostNotFoundException) {
+          frc.response().setStatusCode(404).end();
+        }
+        frc.response().setStatusCode(500).setStatusMessage("Server internal error:" + failure.getMessage()).end();
+      });
+    router.put("/posts/:id").consumes("application/json").handler(BodyHandler.create()).handler(handlers::update);
+    router.delete("/posts/:id").handler(handlers::delete);
+
+    router.get("/hello").handler(rc -> rc.response().end("Hello from my route"));
+
+    return router;
+  }
+
 }
