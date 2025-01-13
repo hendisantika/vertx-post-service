@@ -67,4 +67,10 @@ public class PostRepository {
         }
       );
   }
+
+  public Future<UUID> save(Post data) {
+    return client.preparedQuery("INSERT INTO posts(title, content) VALUES ($1, $2) RETURNING (id)").execute(Tuple.of(data.getTitle(), data.getContent()))
+      .map(rs -> rs.iterator().next().getUUID("id"));
+  }
+
 }
