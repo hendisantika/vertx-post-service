@@ -12,7 +12,10 @@ import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.PoolOptions;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class MainVerticle extends AbstractVerticle {
@@ -108,5 +111,16 @@ public class MainVerticle extends AbstractVerticle {
     Pool pool = Pool.pool(vertx, connectOptions, poolOptions);
 
     return pool;
+  }
+
+  /**
+   * Configure logging from logging.properties file.
+   * When using custom JUL logging properties, named it to vertx-default-jul-logging.properties
+   * or set java.util.logging.config.file system property to locate the properties file.
+   */
+  private static void setupLogging() throws IOException {
+    try (InputStream is = MainVerticle.class.getResourceAsStream("/logging.properties")) {
+      LogManager.getLogManager().readConfiguration(is);
+    }
   }
 }
