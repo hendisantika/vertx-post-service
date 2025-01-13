@@ -3,6 +3,7 @@ package id.my.hendisantika.vertx_post_service;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -38,6 +39,18 @@ public class PostsHandler {
     this.posts.findAll()
       .onSuccess(
         data -> rc.response().end(Json.encode(data))
+      );
+  }
+
+  public void get(RoutingContext rc) {
+    var params = rc.pathParams();
+    var id = params.get("id");
+    this.posts.findById(UUID.fromString(id))
+      .onSuccess(
+        post -> rc.response().end(Json.encode(post))
+      )
+      .onFailure(
+        rc::fail
       );
   }
 }
