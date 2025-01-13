@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.http.HttpClient;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -71,6 +72,23 @@ public class TestMainVerticle {
           buffer -> testContext.verify(
             () -> {
               assertThat(buffer.toJsonArray().size()).isEqualTo(2);
+              testContext.completeNow();
+            }
+          )
+        )
+      );
+  }
+
+  @Test
+  void testGetByNoneExistingId(Vertx vertx, VertxTestContext testContext) {
+    var postByIdUrl = "/posts/" + UUID.randomUUID();
+    client.request(HttpMethod.GET, postByIdUrl)
+      .flatMap(HttpClientRequest::send)
+      .onComplete(
+        testContext.succeeding(
+          response -> testContext.verify(
+            () -> {
+              assertThat(response.statusCode()).isEqualTo(404);
               testContext.completeNow();
             }
           )
