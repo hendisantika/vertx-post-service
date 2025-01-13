@@ -1,7 +1,9 @@
 package id.my.hendisantika.vertx_post_service;
 
+import io.netty.handler.codec.http.HttpMethod;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
@@ -57,6 +59,23 @@ public class TestMainVerticle {
     assertThat(vertx.deploymentIDs())
       .isNotEmpty()
       .hasSize(1);
+  }
+
+  @Test
+  void testGetAll(Vertx vertx, VertxTestContext testContext) {
+    client.request(HttpMethod.GET, "/posts")
+      .flatMap(HttpClientRequest::send)
+      .flatMap(HttpClientResponse::body)
+      .onComplete(
+        testContext.succeeding(
+          buffer -> testContext.verify(
+            () -> {
+              assertThat(buffer.toJsonArray().size()).isEqualTo(2);
+              testContext.completeNow();
+            }
+          )
+        )
+      );
   }
 
   @Test
