@@ -1,5 +1,6 @@
 package id.my.hendisantika.vertx_post_service;
 
+import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.Row;
 
 import java.util.function.Function;
@@ -26,4 +27,14 @@ public class PostRepository {
       row.getLocalDateTime("created_at")
     );
 
+  private final Pool client;
+
+  private PostRepository(Pool _client) {
+    this.client = _client;
+  }
+
+  //factory method
+  public static PostRepository create(Pool client) {
+    return new PostRepository(client);
+  }
 }
