@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.json.Json;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.AfterEach;
@@ -84,6 +85,25 @@ public class TestMainVerticle {
     var postByIdUrl = "/posts/" + UUID.randomUUID();
     client.request(HttpMethod.GET, postByIdUrl)
       .flatMap(HttpClientRequest::send)
+      .onComplete(
+        testContext.succeeding(
+          response -> testContext.verify(
+            () -> {
+              assertThat(response.statusCode()).isEqualTo(404);
+              testContext.completeNow();
+            }
+          )
+        )
+      );
+  }
+
+  @Test
+  void testUpdateByNoneExistingId(Vertx vertx, VertxTestContext testContext) {
+    var postByIdUrl = "/posts/" + UUID.randomUUID();
+    client.request(HttpMethod.PUT, postByIdUrl)
+      .flatMap(req -> req.putHeader("Content-Type", "application/json")
+        .send(Json.encode(CreatePostCommand.of("test title", "test content of my post")))
+      )
       .onComplete(
         testContext.succeeding(
           response -> testContext.verify(
