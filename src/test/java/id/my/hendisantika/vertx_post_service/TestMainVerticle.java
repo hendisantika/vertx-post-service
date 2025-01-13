@@ -2,14 +2,20 @@ package id.my.hendisantika.vertx_post_service;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpClientResponse;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.http.HttpClient;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(VertxExtension.class)
 public class TestMainVerticle {
@@ -23,6 +29,25 @@ public class TestMainVerticle {
     var options = new HttpClientOptions()
       .setDefaultPort(8888);
     this.client = vertx.createHttpClient(options);
+  }
+
+  // Repeat this test 3 times
+  @RepeatedTest(3)
+  @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
+  @DisplayName("Check the HTTP response...")
+  void testHello(Vertx vertx, VertxTestContext testContext) {
+    client.request(HttpMethod.GET, "/hello")
+      .compose(req -> req.send().compose(HttpClientResponse::body))
+      .onComplete(
+        testContext.succeeding(
+          buffer -> testContext.verify(
+            () -> {
+              assertThat(buffer.toString()).isEqualTo("Hello from my route");
+              testContext.completeNow();
+            }
+          )
+        )
+      );
   }
 
   @Test
