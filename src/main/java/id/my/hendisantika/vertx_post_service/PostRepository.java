@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.SqlResult;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
@@ -73,4 +74,15 @@ public class PostRepository {
       .map(rs -> rs.iterator().next().getUUID("id"));
   }
 
+  public Future<Integer> saveAll(List<Post> data) {
+    var tuples = data.stream()
+      .map(
+        d -> Tuple.of(d.getTitle(), d.getContent())
+      )
+      .collect(Collectors.toList());
+
+    return client.preparedQuery("INSERT INTO posts (title, content) VALUES ($1, $2)")
+      .executeBatch(tuples)
+      .map(SqlResult::rowCount);
+  }
 }
