@@ -1,5 +1,8 @@
 package id.my.hendisantika.vertx_post_service;
 
+import io.vertx.core.json.Json;
+import io.vertx.ext.web.RoutingContext;
+
 import java.util.logging.Logger;
 
 /**
@@ -24,5 +27,17 @@ public class PostsHandler {
   //factory method
   public static PostsHandler create(PostRepository posts) {
     return new PostsHandler(posts);
+  }
+
+  public void all(RoutingContext rc) {
+//        var params = rc.queryParams();
+//        var q = params.get("q");
+//        var limit = params.get("limit") == null ? 10 : Integer.parseInt(params.get("q"));
+//        var offset = params.get("offset") == null ? 0 : Integer.parseInt(params.get("offset"));
+//        LOGGER.log(Level.INFO, " find by keyword: q={0}, limit={1}, offset={2}", new Object[]{q, limit, offset});
+    this.posts.findAll()
+      .onSuccess(
+        data -> rc.response().end(Json.encode(data))
+      );
   }
 }
