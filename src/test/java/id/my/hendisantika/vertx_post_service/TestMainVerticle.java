@@ -5,6 +5,7 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
@@ -48,6 +49,14 @@ public class TestMainVerticle {
           )
         )
       );
+  }
+
+  @AfterEach
+  @DisplayName("Check that the verticle is still there")
+  void lastChecks(Vertx vertx) {
+    assertThat(vertx.deploymentIDs())
+      .isNotEmpty()
+      .hasSize(1);
   }
 
   @Test
