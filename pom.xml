@@ -19,7 +19,7 @@
     <vertx.version>4.5.11</vertx.version>
     <junit-jupiter.version>5.9.1</junit-jupiter.version>
 
-    <assertj-core.version>3.26.3</assertj-core.version>
+    <assertj-core.version>3.27.2</assertj-core.version>
     <jackson.version>2.18.2</jackson.version>
 
     <main.verticle>id.my.hendisantika.vertx_post_service.MainVerticle</main.verticle>
