@@ -20,7 +20,7 @@
     <junit-jupiter.version>6.0.3</junit-jupiter.version>
 
     <assertj-core.version>3.27.7</assertj-core.version>
-    <jackson.version>2.21.0</jackson.version>
+    <jackson.version>2.21.1</jackson.version>
 
     <main.verticle>id.my.hendisantika.vertx_post_service.MainVerticle</main.verticle>
     <launcher.class>io.vertx.core.Launcher</launcher.class>
