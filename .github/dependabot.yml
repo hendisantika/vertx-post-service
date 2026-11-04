@@ -1,13 +1,67 @@
 version: 2
 updates:
-  - package-ecosystem: maven
+  # Maven dependencies & plugins
+  - package-ecosystem: "maven"
     directory: "/"
     schedule:
-      interval: daily
-      time: '05:00'
-      timezone: Asia/Jakarta
+      interval: "daily"
+      time: "05:00"
+      timezone: "Asia/Jakarta"
     open-pull-requests-limit: 10
+    target-branch: "main"
+    labels:
+      - "dependencies"
+      - "java"
+    assignees:
+      - "hendisantika"
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+      include: "scope"
+    rebase-strategy: "auto"
+    groups:
+      vertx:
+        patterns:
+          - "io.vertx:*"
+      junit:
+        patterns:
+          - "org.junit:*"
+          - "org.junit.jupiter:*"
+          - "org.junit.platform:*"
+      jackson:
+        patterns:
+          - "com.fasterxml.jackson*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins:*"
+          - "org.codehaus.mojo:*"
+      test-libraries:
+        dependency-type: "development"
+        patterns:
+          - "org.assertj:*"
+    ignore:
+      # Stay on the current major version of the Vert.x stack; majors need a manual migration
+      - dependency-name: "io.vertx:*"
+        update-types: [ "version-update:semver-major" ]
+
+  # GitHub Actions used in workflows
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+      time: "05:00"
+      timezone: "Asia/Jakarta"
+    open-pull-requests-limit: 5
+    target-branch: "main"
+    labels:
+      - "dependencies"
+      - "github_actions"
+    assignees:
+      - "hendisantika"
+    commit-message:
+      prefix: "ci(deps)"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
